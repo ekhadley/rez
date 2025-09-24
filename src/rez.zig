@@ -17,6 +17,12 @@ const std = @import("std");
 
 //pub const StateMap = std.AutoHashMap(u8, PatternState);
 
+
+
+// thoughts on moving forward
+// I've been neglecting greediness/laziness. Basically I've assumed laziness. I'd like to have both.
+// 
+
 const MAX_NUM_STATES = 255;
 const NUM_CHARS = 255;
 
@@ -84,20 +90,20 @@ pub const Pattern = struct {
         self.reset();
         var started: bool = self.getState().initial;
         var start: usize = 0;
-        std.debug.print("starting substring match for input: '{s}'\n", .{str});
+        // std.debug.print("starting substring match for input: '{s}'\n", .{str});
         for (str, 0..) |c, i| {
             const cur_state = self.read(c);
-            std.debug.print("str[{d}] = '{c}', start: {d}, cur = {d}, final: {}\n", .{ i, c, self.state, start, cur_state.final });
+            // std.debug.print("str[{d}] = '{c}', start: {d}, cur = {d}, final: {}\n", .{ i, c, self.state, start, cur_state.final });
             if (cur_state.initial) {
                 started = true;
                 start = i + 1;
             }
             if (started and cur_state.final) {
-                std.debug.print("match found: str[{d}..{d}+1] = '{s}'\n", .{ start, i + 1, str[start .. i + 1] });
+                // std.debug.print("match found: str[{d}..{d}+1] = '{s}'\n", .{ start, i + 1, str[start .. i + 1] });
                 return str[start .. i + 1];
             }
         }
-        std.debug.print("reached end of string with no match\n", .{});
+        // std.debug.print("reached end of string with no match\n", .{});
         return null;
     }
 
@@ -150,23 +156,23 @@ pub const CaptureIterator = struct {
         self.pat.reset();
         var started: bool = self.pat.getState().initial;
         var start: usize = 0;
-        std.debug.print("starting substring match for input: '{s}'\n", .{self.str});
+        // std.debug.print("starting substring match for input: '{s}'\n", .{self.str});
         for (self.str[self.place..], 0..) |c, i| {
             const cur_state = self.pat.read(c);
-            std.debug.print("str[{d}] = '{c}', place: {d}, start: {d}, cur = {d}, final: {}\n", .{ i, c, self.place, self.pat.state, start, cur_state.final });
+            // std.debug.print("str[{d}] = '{c}', place: {d}, start: {d}, cur = {d}, final: {}\n", .{ i, c, self.place, self.pat.state, start, cur_state.final });
             if (cur_state.initial) {
                 started = true;
                 start = i + 1;
             }
             if (started and cur_state.final) {
-                std.debug.print("match found: str[{d}..{d}+1] = '{s}'\n", .{ start, i + 1, self.str[start + self.place .. self.place + i + 1] });
+                // std.debug.print("match found: str[{d}..{d}+1] = '{s}'\n", .{ start, i + 1, self.str[start + self.place .. self.place + i + 1] });
                 const match = self.str[start + self.place .. self.place + i + 1];
                 self.place += i + 1;
                 return match;
             }
         }
         self.place = self.str.len;
-        std.debug.print("reached end of string with no match\n", .{});
+        // std.debug.print("reached end of string with no match\n", .{});
         return null;
     }
 };
